@@ -1,0 +1,4 @@
+/.idea/
+/config.py
+/store.db
+/identifier.sqlite
