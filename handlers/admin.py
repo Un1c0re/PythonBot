@@ -7,7 +7,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from create_bot import bot
 from config import ADMIN
 from keyboards import admin_keyboard
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from database import sqlite_db
 
 
@@ -32,16 +32,17 @@ async def cm_start(message: types.Message):
 
 
 async def cancel_handler(message: types.Message, state: FSMContext):
+    await message.delete()
     current_state = await state.get_state()
     if current_state is None:
         return
     await state.finish()
-    await message.answer("Ввод товара отменен")
+    await message.answer("Ввод товара отменен", reply_markup=ReplyKeyboardRemove())
 
 
 async def load_photo(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['photo'] = message.photo[0].file_id
+        data['photo'] = message.text
     await FSMAdmin.next()
     await message.answer("Введите название")
 
@@ -57,7 +58,7 @@ async def load_category(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['category'] = message.text.lower()
     await FSMAdmin.next()
-    await message.answer("Назначьте цену")
+    await message.answer("Назначьте цену (меньше 10 000 000)")
 
 
 async def load_price(message: types.Message, state: FSMContext):
@@ -66,16 +67,16 @@ async def load_price(message: types.Message, state: FSMContext):
 
     await sqlite_db.sql_add_to_products(state)
     await state.finish()
-    await message.answer("Товар успешно добавлен")
+    await message.answer("Товар успешно добавлен", reply_markup=ReplyKeyboardRemove())
 
 
 async def delete_item(message: types.Message):
     if message.from_user.id == ADMIN:
-        read = await sqlite_db.sql_read_every()
-        for ret in read:
-            await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена: {ret[-1]}')
-            await bot.send_message(message.from_user.id, text='^^^', reply_markup=InlineKeyboardMarkup(). \
-                                   add(InlineKeyboardButton(f'удалить {ret[1]}', callback_data=f'del {ret[1]}')))
+        collection = await sqlite_db.sql_read_every()
+        for item in collection:
+            await bot.send_photo(message.from_user.id, item[0], f'{item[1]}\nОписание: {item[2]}\nЦена: {item[-1]}',\
+                                 reply_markup=InlineKeyboardMarkup()\
+                                 .add(InlineKeyboardButton(f'удалить {item[1]}', callback_data=f'del {item[1]}')))
 
 
 async def del_callback_item(callback_query: types.CallbackQuery):
@@ -88,11 +89,9 @@ def register_handlers_client(dp: Dispatcher):
 
     dp.register_message_handler(cm_start, lambda message: 'добавить товар' in message.text, state=None)
 
-    dp.register_message_handler(cancel_handler, state="*", commands=['отмена'])
+    dp.register_message_handler(cancel_handler, lambda message: 'отмена' in message.text, state="*")
 
-    dp.register_message_handler(cancel_handler, Text(equals='отмена', ignore_case=True), state="*")
-
-    dp.register_message_handler(load_photo, content_types=['photo'], state=FSMAdmin.photo)
+    dp.register_message_handler(load_photo, state=FSMAdmin.photo)
 
     dp.register_message_handler(load_name, state=FSMAdmin.name)
 

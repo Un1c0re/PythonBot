@@ -1,6 +1,5 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
-button2 = KeyboardButton('желаемое')
 button3 = KeyboardButton('поиск товара')
 button4 = KeyboardButton('меню')
 button5 = KeyboardButton('все товары')
@@ -16,4 +15,4 @@ category_kb = InlineKeyboardMarkup(resize_keyboard=True)
 category_kb.add(b1).add(b2).add(b3).add(b4).add(b5)
 
 client_kb = ReplyKeyboardMarkup(resize_keyboard=True)
-client_kb.row(button2, button3, button4).add(button5)
+client_kb.row(button3, button4).add(button5)
