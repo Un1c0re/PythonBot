@@ -45,8 +45,11 @@ async def goto_category(callback_query: types.CallbackQuery):
 
 async def category_products(callback_query: types.CallbackQuery):
     list_of_products = await sqlite_db.sql_find_by_category(callback_query)
-    for product in list_of_products:
-        await buy_process(callback_query.from_user.id, product)
+    if len(list_of_products) == 0:
+        await callback_query.answer('в этой категории товаров нет')
+    else:
+        for product in list_of_products:
+            await buy_process(callback_query.from_user.id, product)
 
 
 async def all_products(message: types.Message):
