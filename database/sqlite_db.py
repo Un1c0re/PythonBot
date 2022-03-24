@@ -1,7 +1,5 @@
 import sqlite3 as sq
 
-from create_bot import dp, bot
-
 
 def sql_start():
     global base, cursor

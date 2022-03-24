@@ -1,14 +1,12 @@
 from aiogram import types, Dispatcher
-
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-
-from create_bot import bot
-from config import ADMIN
-from keyboards import admin_keyboard
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
+
+from config import ADMIN
+from create_bot import bot
 from database import sqlite_db
+from keyboards import admin_keyboard
 
 
 class FSMAdmin(StatesGroup):
@@ -74,7 +72,7 @@ async def delete_item(message: types.Message):
     if message.from_user.id == ADMIN:
         collection = await sqlite_db.sql_read_every()
         for item in collection:
-            await bot.send_photo(message.from_user.id, item[0], f'{item[1]}\nОписание: {item[2]}\nЦена: {item[-1]}',\
+            await bot.send_photo(message.from_user.id, item[0], f'{item[1]}\nОписание: {item[2]}\nЦена: {item[-1]}',
                                  reply_markup=InlineKeyboardMarkup()\
                                  .add(InlineKeyboardButton(f'удалить {item[1]}', callback_data=f'del {item[1]}')))
 
