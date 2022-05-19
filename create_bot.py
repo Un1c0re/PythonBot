@@ -1,12 +1,25 @@
 import asyncio
+import logging
 from aiogram import Bot, Dispatcher
 from config import TOKEN
 
+from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+
+from config import *
 
 storage = MemoryStorage()
 
 
-loop = asyncio.get_event_loop()
-bot = Bot(TOKEN, parse_mode="HTML")
-dp = Dispatcher(bot, loop=loop, storage=storage)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+
+# Initialize bot and dispatcher
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot)
+dp.middleware.setup(LoggingMiddleware())
+
+# loop = asyncio.get_event_loop()
+# bot = Bot(TOKEN, parse_mode="HTML")
+# dp = Dispatcher(bot, loop=loop, storage=storage)

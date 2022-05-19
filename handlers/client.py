@@ -129,7 +129,7 @@ async def successful_payment(message: types.Message):
 
 def register_handlers_client(dispatcher: Dispatcher):
 
-    dispatcher.register_message_handler(command_start, commands=['start', 'help'])
+    dispatcher.register_message_handler(command_start, commands=['start'])
 
     dispatcher.register_message_handler(categories, lambda message: 'меню' in message.text)
 
