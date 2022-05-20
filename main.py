@@ -24,8 +24,8 @@ async def on_shutdown(dp):
     await bot.delete_webhook()
 
     # Close DB connection (if used)
-    # await dp.storage.close()
-    # await dp.storage.wait_closed()
+    await dp.storage.close()
+    await dp.storage.wait_closed()
 
     logging.warning('Bye!')
 

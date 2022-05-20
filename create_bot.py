@@ -19,7 +19,3 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 dp.middleware.setup(LoggingMiddleware())
-
-# loop = asyncio.get_event_loop()
-# bot = Bot(TOKEN, parse_mode="HTML")
-# dp = Dispatcher(bot, loop=loop, storage=storage)
